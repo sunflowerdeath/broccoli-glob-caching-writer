@@ -53,7 +53,7 @@ Type: `array.<string>`
 
 ##CachingWriter.prototype.updateCache(srcDirs, destDir)
 
-This method creates build results, it must be implemented by inherited class.
+This method creates build results, it must be implemented in inherited class.
 It is called only when files in input tree are changed.
 
 If you want to perform async operations, return a promise from this method.
