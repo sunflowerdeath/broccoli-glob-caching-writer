@@ -21,6 +21,11 @@ MyWriter.prototype = Object.create(CachingWriter.prototype)
 MyWriter.prototype.updateCache = function(srcDirs, destDir) {
   //create result files
 }
+
+
+var tree = new MyWriter('inputTree', {
+	files: ['**/*.js']
+})
 ```
 
 ##API
