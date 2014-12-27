@@ -98,17 +98,56 @@ describe('CachingWriter', function() {
 	})
 	
 	describe('updateCache', function() {
-		xit('is called with single srcDir when single inputTree was provided', function() {
+		it('is called with single srcDir when single inputTree was provided', function() {
+			var Writer = createWriterWithSpy()
+			var tree = Writer(DIR)
+			builder = new broccoli.Builder(tree)
+			return builder.build()
+				.then(function() {
+					var srcDir = tree.updateCache.getCall(0).args[0]
+					assert.deepEqual(srcDir, [DIR])
+				})
 		})
 
-		xit('is called with array of srcDirs when array of inputTrees was provided',
+		it('is called with array of srcDirs when array of inputTrees was provided',
 		function() {
+			var Writer = createWriterWithSpy()
+			var tree = Writer([DIR, DIR])
+			builder = new broccoli.Builder(tree)
+			return builder.build()
+				.then(function() {
+					var srcDirs = tree.updateCache.getCall(0).args[0]
+					assert.deepEqual(srcDirs, [DIR, DIR])
+				})
 		})
 
-		xit('is called with destDir', function() {
+		it('is called with destDir', function() {
+			var Writer = createWriterWithSpy()
+			var tree = Writer(DIR)
+			builder = new broccoli.Builder(tree)
+			return builder.build()
+				.then(function() {
+					var destDir = tree.updateCache.getCall(0).args[1]
+					assert(destDir.match('dest_dir'))
+				})
 		})
 
-		xit('files written to the destDir will be in the final output', function() {
+		it('files written to the destDir will be in the final output', function() {
+			var FILE = 'file'
+			var TEXT = 'text'
+
+			var Writer = createWriter()
+			Writer.prototype.updateCache = function(srcDir, destDir) {
+				fs.writeFileSync(path.join(destDir, FILE), TEXT)
+			}
+
+			var tree = Writer(DIR)
+			builder = new broccoli.Builder(tree)
+			return builder.build()
+				.then(function(result) {
+					var text = fs.readFileSync(path.join(result.directory, FILE))
+					assert.equal(TEXT, text)
+				})
 		})
 	})
 	

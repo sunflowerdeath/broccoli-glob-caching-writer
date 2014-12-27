@@ -19,8 +19,19 @@ function CachingWriter(inputTrees, options) {
 	this.options = options
 }
 
+var promiseSeries = function(arr, fn) {
+  var ready = Q(null)
+  var result = []
+  _.each(arr, function(item) {
+		ready = ready
+			.then(function() { return fn(item) })
+			.then(function(res) { result.push(res) })
+  })
+  return ready.then(function() { return result })
+}
+
 CachingWriter.prototype.read = function(readTree) {
-	return Q.all(_.map(this.inputTrees, readTree)).then(function(srcDirs) {
+	return promiseSeries(this.inputTrees, readTree).then(function(srcDirs) {
 		var destDir = this.destDir
 		var hash = this.hashDirs(srcDirs)
 		if (hash !== this.cachedHash) {
