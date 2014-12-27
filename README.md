@@ -1,7 +1,7 @@
 #broccoli-glob-caching-writer
 
 Similar to [broccoli-caching-writer](https://github.com/rwjblue/broccoli-caching-writer)
-but allows to specify files that need to be cached with glob patterns.
+but allows to specify files that need to be cached using glob patterns.
 
 ##Install
 
@@ -59,7 +59,7 @@ Patterns that begin with `!` will exclude files.
 Patterns are processed in order, so inclusion and exclusion order is significant.
 
 
-###CachingWriter.prototype.updateCache(srcDirs, destDir)
+###CachingWriter.prototype.updateCache(srcDirs, destDir, cachedFiles)
 
 This method creates build results, it must be implemented in inherited class.
 It is called only when files in input tree are changed.
@@ -77,6 +77,13 @@ Path or list of paths of source dirs.
 Type: `string`
 
 Path of directory for result files.
+
+####cachedFiles
+
+Type: `array.<string>`
+
+Array of cached files.
+Paths are absolute.
 
 ##License
 

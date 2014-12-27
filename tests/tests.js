@@ -121,7 +121,7 @@ describe('CachingWriter', function() {
 				})
 		})
 
-		it('is called with destDir', function() {
+		it('is called with destDir as second arg', function() {
 			var Writer = createWriterWithSpy()
 			var tree = Writer(DIR)
 			builder = new broccoli.Builder(tree)
@@ -129,6 +129,17 @@ describe('CachingWriter', function() {
 				.then(function() {
 					var destDir = tree.updateCache.getCall(0).args[1]
 					assert(destDir.match('dest_dir'))
+				})
+		})
+
+		it('is called with cachedFiles as third arg', function() {
+			var Writer = createWriterWithSpy()
+			var tree = Writer(DIR)
+			builder = new broccoli.Builder(tree)
+			return builder.build()
+				.then(function() {
+					var files = tree.updateCache.getCall(0).args[2]
+					assert.deepEqual(files, [path.join(DIR, 'file.css'), path.join(DIR, 'file.js')])
 				})
 		})
 

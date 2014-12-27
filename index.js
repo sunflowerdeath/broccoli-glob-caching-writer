@@ -33,23 +33,21 @@ var promiseSeries = function(arr, fn) {
 CachingWriter.prototype.read = function(readTree) {
 	return promiseSeries(this.inputTrees, readTree).then(function(srcDirs) {
 		var destDir = this.destDir
-		var hash = this.hashDirs(srcDirs)
+		var files = this.findFiles(srcDirs)
+		var hash = this.hashFiles(files)
 		if (hash !== this.cachedHash) {
 			destDir = quickTemp.makeOrRemake(this, 'destDir')
 			this.cachedHash = hash
 			var srcArg = srcDirs.length ? srcDirs : srcDirs[0]
-			this.cachedResult = this.updateCache(srcArg, destDir)
+			this.cachedResult = this.updateCache(srcArg, destDir, files)
 		}
 		return Q.when(this.cachedResult).then(function() { return destDir })
 	}.bind(this))
 }
 
-/**
- * Calculates hash of all files mathing globs in srcDirs.
- * @param srcDirs {array.<string>}
- */
-CachingWriter.prototype.hashDirs = function(srcDirs) {
-	var files = _.flatten(_.map(srcDirs, function(srcDir) {
+//Finds all files mathing globs in srcDirs
+CachingWriter.prototype.findFiles = function(srcDirs) {
+	return _.flatten(_.map(srcDirs, function(srcDir) {
 		var files = multiglob.sync(this.options.files, {
 			cwd: srcDir,
 			nodir: true,
@@ -59,13 +57,15 @@ CachingWriter.prototype.hashDirs = function(srcDirs) {
 			return path.join(srcDir, file)
 		})
 	}, this))
+}
 
+//Calculates hash of all files.
+CachingWriter.prototype.hashFiles = function(files) {
 	var keys = []
 	_.each(files, function(file) {
 		var stats = fs.statSync(file)
 		keys.push(stats.mtime.getTime(), stats.size)
 	})
-
 	return crypto.createHash('md5').update(keys.join('')).digest('hex')
 }
 
