@@ -82,7 +82,7 @@ Path of directory for result files.
 
 Type: `array.<string>`
 
-Array of cached files.
+Array of cached files paths.
 Paths are absolute.
 
 ##License

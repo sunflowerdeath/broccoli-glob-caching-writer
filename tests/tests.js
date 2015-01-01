@@ -4,7 +4,7 @@ var sinon = require('sinon')
 var fs = require('fs-extra')
 var broccoli = require('broccoli')
 
-var CachingWriter = require('../index.js')
+var CachingWriter = require('..')
 
 describe('CachingWriter', function() {
 	var ORIG_DIR = path.join(__dirname, 'files')

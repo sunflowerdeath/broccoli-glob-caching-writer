@@ -5,7 +5,7 @@ var quickTemp = require('quick-temp')
 
 var _ = require('underscore')
 var Q = require('q')
-var multiglob = require('multiple-glob')
+var dirmatch = require('dirmatch')
 
 /**
  * @param inputTrees {array.<Tree>|Tree} Input tree or list of input trees.
@@ -20,7 +20,7 @@ function CachingWriter(inputTrees, options) {
 }
 
 var promiseSeries = function(arr, fn) {
-  var ready = Q(null)
+  var ready = Q()
   var result = []
   _.each(arr, function(item) {
 		ready = ready
@@ -48,8 +48,7 @@ CachingWriter.prototype.read = function(readTree) {
 //Finds all files mathing globs in srcDirs
 CachingWriter.prototype.findFiles = function(srcDirs) {
 	return _.flatten(_.map(srcDirs, function(srcDir) {
-		var files = multiglob.sync(this.options.files, {
-			cwd: srcDir,
+		var files = dirmatch(srcDir, this.options.files, {
 			nodir: true,
 			nomatch: true
 		})
