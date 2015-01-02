@@ -1,6 +1,6 @@
 {
   "name": "broccoli-glob-caching-writer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Caching writer for broccoli that allows to specify files that need to be cached using glob patterns.",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
   "author": "sunflowerdeath",
   "license": "public domain",
   "dependencies": {
-    "dirmatch": "0.0.0",
+    "dirmatch": "0.0.1",
     "q": "^1.1.2",
     "quick-temp": "^0.1.2",
     "underscore": "^1.7.0"
