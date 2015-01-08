@@ -1,64 +1,42 @@
 var path = require('path')
 var fs = require('fs')
 var crypto = require('crypto')
-var quickTemp = require('quick-temp')
 
 var _ = require('underscore')
 var Q = require('q')
 var dirmatch = require('dirmatch')
+var quickTemp = require('quick-temp')
 
 /**
- * @param inputTrees {array.<Tree>|Tree} Input tree or list of input trees.
+ * @param inputTree {Tree}
  * @param [options] {object}
  * @param [options.files] {array.<string>} List of glob patterns to specify cached files.
  */
-function CachingWriter(inputTrees, options) {
-	this.inputTrees = _.isArray(inputTrees) ? inputTrees : [inputTrees]
+function CachingWriter(inputTree, options) {
+	this.inputTree = inputTree
 	if (!options) options = {}
 	if (!options.files) options.files = ['**']
 	this.options = options
 }
 
-var promiseSeries = function(arr, fn) {
-  var ready = Q()
-  var result = []
-  _.each(arr, function(item) {
-		ready = ready
-			.then(function() { return fn(item) })
-			.then(function(res) { result.push(res) })
-  })
-  return ready.then(function() { return result })
-}
-
+//Compares current files hash and cached hash,
+//and if they are different, calls updateCache.
 CachingWriter.prototype.read = function(readTree) {
-	return promiseSeries(this.inputTrees, readTree).then(function(srcDirs) {
+	return readTree(this.inputTree).then(function(srcDir) {
 		var destDir = this.destDir
-		var files = this.findFiles(srcDirs)
-		var hash = this.hashFiles(files)
+		var files = dirmatch(srcDir, this.options.files)
+		var absFiles = _.map(files, function(file) { return path.join(srcDir, file) })
+		var hash = this.hashFiles(absFiles)
 		if (hash !== this.cachedHash) {
 			destDir = quickTemp.makeOrRemake(this, 'destDir')
 			this.cachedHash = hash
-			var srcArg = srcDirs.length ? srcDirs : srcDirs[0]
-			this.cachedResult = this.updateCache(srcArg, destDir, files)
+			this.cachedResult = this.updateCache(srcDir, destDir, files)
 		}
 		return Q.when(this.cachedResult).then(function() { return destDir })
 	}.bind(this))
 }
 
-//Finds all files mathing globs in srcDirs
-CachingWriter.prototype.findFiles = function(srcDirs) {
-	return _.flatten(_.map(srcDirs, function(srcDir) {
-		var files = dirmatch(srcDir, this.options.files, {
-			nodir: true,
-			nomatch: true
-		})
-		return _.map(files, function(file) {
-			return path.join(srcDir, file)
-		})
-	}, this))
-}
-
-//Calculates hash of all files.
+//Calculates hash of all files
 CachingWriter.prototype.hashFiles = function(files) {
 	var keys = []
 	_.each(files, function(file) {

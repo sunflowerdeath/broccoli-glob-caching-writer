@@ -1,7 +1,7 @@
 var assert = require('assert')
+var fs = require('fs-extra')
 var path = require('path')
 var sinon = require('sinon')
-var fs = require('fs-extra')
 var broccoli = require('broccoli')
 
 var CachingWriter = require('..')
@@ -12,8 +12,8 @@ describe('CachingWriter', function() {
 	var builder
 
 	var createWriter = function() {
-		var Writer = function(inputTrees, options) {
-			if (!(this instanceof Writer)) return new Writer(inputTrees, options)
+		var Writer = function(inputTree, options) {
+			if (!(this instanceof Writer)) return new Writer(inputTree, options)
 			CachingWriter.apply(this, arguments)
 		}
 		Writer.prototype = Object.create(CachingWriter.prototype)
@@ -98,26 +98,14 @@ describe('CachingWriter', function() {
 	})
 	
 	describe('updateCache', function() {
-		it('is called with single srcDir when single inputTree was provided', function() {
+		it('is called with srcDir', function() {
 			var Writer = createWriterWithSpy()
 			var tree = Writer(DIR)
 			builder = new broccoli.Builder(tree)
 			return builder.build()
 				.then(function() {
 					var srcDir = tree.updateCache.getCall(0).args[0]
-					assert.deepEqual(srcDir, [DIR])
-				})
-		})
-
-		it('is called with array of srcDirs when array of inputTrees was provided',
-		function() {
-			var Writer = createWriterWithSpy()
-			var tree = Writer([DIR, DIR])
-			builder = new broccoli.Builder(tree)
-			return builder.build()
-				.then(function() {
-					var srcDirs = tree.updateCache.getCall(0).args[0]
-					assert.deepEqual(srcDirs, [DIR, DIR])
+					assert.deepEqual(srcDir, DIR)
 				})
 		})
 
@@ -139,7 +127,7 @@ describe('CachingWriter', function() {
 			return builder.build()
 				.then(function() {
 					var files = tree.updateCache.getCall(0).args[2]
-					assert.deepEqual(files, [path.join(DIR, 'file.css'), path.join(DIR, 'file.js')])
+					assert.deepEqual(files, ['file.css', 'file.js'])
 				})
 		})
 

@@ -14,7 +14,7 @@ npm install broccoli-glob-caching-writer
 ```js
 var CachingWriter = require('broccoli-glob-caching-writer')
 
-var MyWriter = function(inputTrees, options) {
+var MyWriter = function(inputTree, options) {
   CachingWriter.apply(this, arguments)
 }
 MyWriter.prototype = Object.create(CachingWriter.prototype)
@@ -30,18 +30,15 @@ var tree = new MyWriter('inputTree', {
 
 ##API
 
-###CachingWriter(inputTrees, [options])
+###CachingWriter(inputTree, [options])
 
 Constructor.
 
-####inputTrees
+####inputTree
 
-Type: `Tree|array.<Tree>`
+Type: `Tree`
 
-Single tree or an array of trees.
-<br>
-If an array of trees was specified, an array of source paths will be provided
-to `updateCache`.
+Input broccoli tree.
 
 ####options
 
@@ -59,18 +56,18 @@ Patterns that begin with `!` will exclude files.
 Patterns are processed in order, so inclusion and exclusion order is significant.
 
 
-###CachingWriter.prototype.updateCache(srcDirs, destDir, cachedFiles)
+###CachingWriter.prototype.updateCache(srcDir, destDir, cachedFiles)
 
 This method creates build results, it must be implemented in inherited class.
 It is called only when files in input tree are changed.
 
 If you want to perform async operations, return a promise from this method.
 
-####srcDirs
+####srcDir
 
-Type: `string|array.<string>`
+Type: `string`
 
-Path or list of paths of source dirs.
+Path of the `inputTree`.
 
 ####destDir
 
@@ -83,7 +80,7 @@ Path of directory for result files.
 Type: `array.<string>`
 
 Array of cached files paths.
-Paths are absolute.
+Paths are relative to the `inputTree`.
 
 ##License
 
