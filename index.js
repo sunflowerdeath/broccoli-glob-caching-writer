@@ -19,8 +19,10 @@ function CachingWriter(inputTree, options) {
 	this.options = options
 }
 
-//Compares current files hash and cached hash,
-//and if they are different, calls updateCache.
+/**
+ * Compares current files hash and cached hash, and if they are different, calls
+ * 'updateCache'.
+ */
 CachingWriter.prototype.read = function(readTree) {
 	return readTree(this.inputTree).then(function(srcDir) {
 		var destDir = this.destDir
@@ -36,7 +38,7 @@ CachingWriter.prototype.read = function(readTree) {
 	}.bind(this))
 }
 
-//Calculates hash of all files
+/** Calculates hash of all files */
 CachingWriter.prototype.hashFiles = function(files) {
 	var keys = []
 	_.each(files, function(file) {

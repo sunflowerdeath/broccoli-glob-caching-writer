@@ -1,15 +1,15 @@
-#broccoli-glob-caching-writer
+# broccoli-glob-caching-writer
 
 Similar to [broccoli-caching-writer](https://github.com/rwjblue/broccoli-caching-writer)
 but allows to specify files that need to be cached using glob patterns.
 
-##Install
+## Install
 
 ```
 npm install broccoli-glob-caching-writer
 ```
 
-##Usage
+## Usage
 
 ```js
 var CachingWriter = require('broccoli-glob-caching-writer')
@@ -28,25 +28,25 @@ var tree = new MyWriter('inputTree', {
 })
 ```
 
-##API
+## API
 
-###CachingWriter(inputTree, [options])
+### CachingWriter(inputTree, [options])
 
 Constructor.
 
-####inputTree
+#### inputTree
 
 Type: `Tree`
 
 Input broccoli tree.
 
-####options
+#### options
 
 Type: `object`
 
 Object with options.
 
-####options.files
+#### options.files
 
 Type: `array.<string>`
 
@@ -56,33 +56,33 @@ Patterns that begin with `!` will exclude files.
 Patterns are processed in order, so inclusion and exclusion order is significant.
 
 
-###CachingWriter.prototype.updateCache(srcDir, destDir, cachedFiles)
+### CachingWriter.prototype.updateCache(srcDir, destDir, cachedFiles)
 
 This method creates build results, it must be implemented in inherited class.
 It is called only when files in input tree are changed.
 
 If you want to perform async operations, return a promise from this method.
 
-####srcDir
+#### srcDir
 
 Type: `string`
 
 Path of the `inputTree`.
 
-####destDir
+#### destDir
 
 Type: `string`
 
 Path of directory for result files.
 
-####cachedFiles
+#### cachedFiles
 
 Type: `array.<string>`
 
 Array of cached files paths.
 Paths are relative to the `inputTree`.
 
-##License
+## License
 
 Public domain, see the `LICENCE.md` file.
 
